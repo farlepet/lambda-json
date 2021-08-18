@@ -1,0 +1,11 @@
+Lambda JSON Library
+-------------------
+
+This library is mainly intended to be used with the Lambda OS build system to
+parse configuration files, for kernel and module configuration in particular.
+However, the intent was to make it generally useful in any application
+requiring basic JSON parsing.
+
+Missing features (not currently planned):
+ - Escape sequences (e.g. \" or \033)
+ - JSON generation

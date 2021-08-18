@@ -7,10 +7,14 @@
 extern "C" {
 #endif
 
+/* @note If these are changed, they MUST also be changed when compiling the
+ * library. */
 #ifndef LJSON_INTTYPE
+/** Type to use for storing JSON integers */
 #  define LJSON_INTTYPE   int
 #endif
 #ifndef LJSON_FLOATTYPE
+/** Type to use for storing JSON floating-points */
 #  define LJSON_FLOATTYPE double
 #endif
 
@@ -20,45 +24,54 @@ typedef struct ljson_array_struct   ljson_array_t;
 typedef struct ljson_item_struct    ljson_item_t;
 typedef struct ljson_struct         ljson_t;
 
+/**
+ * JSON object types */
 typedef enum {
-    LJSON_ITEMTYPE_NONE = 0,
-    LJSON_ITEMTYPE_NULL,
-    LJSON_ITEMTYPE_STRING,
-    LJSON_ITEMTYPE_INTEGER,
-    LJSON_ITEMTYPE_FLOAT,
-    LJSON_ITEMTYPE_ARRAY,
-    LJSON_ITEMTYPE_MAP
+    LJSON_ITEMTYPE_NONE = 0, /** Invalid */
+    LJSON_ITEMTYPE_NULL,     /** null */
+    LJSON_ITEMTYPE_STRING,   /** "..." or '...' */
+    LJSON_ITEMTYPE_INTEGER,  /** Whole number */
+    LJSON_ITEMTYPE_FLOAT,    /** Number with decimal portion */
+    LJSON_ITEMTYPE_ARRAY,    /** [ ... ] */
+    LJSON_ITEMTYPE_MAP       /** { "...": ... } */
 } ljson_itemtype_e;
 
+/**
+ * Represents a single JSON object */
 struct ljson_item_struct {
-    ljson_itemtype_e type;
+    ljson_itemtype_e type;       /** Type of this object */
     union {
-        char           *str;
-        LJSON_INTTYPE   integer;
-        LJSON_FLOATTYPE flt;
-        ljson_map_t    *map;
-        ljson_array_t  *array;
+        char           *str;     /** String data */
+        LJSON_INTTYPE   integer; /** Integer data */
+        LJSON_FLOATTYPE flt;     /** Floating-point data */
+        ljson_map_t    *map;     /** Map { "...": ... } */
+        ljson_array_t  *array;   /** Array [ ... ] */
     };
 };
 
+/**
+ * Represents a single key-value pair in a JSON map */
 struct ljson_mapitem_struct {
-    char        *name;
-    ljson_item_t item;
-};
-
-struct ljson_map_struct {
-    uint16_t        count;
-    ljson_mapitem_t items[];
-};
-
-struct ljson_array_struct {
-    uint16_t     count;
-    ljson_item_t items[];
+    char        *name; /** Key */
+    ljson_item_t item; /** Value */
 };
 
 /**
- * Represents an entire JSON file
- */
+ * Represents a JSON map */
+struct ljson_map_struct {
+    uint16_t        count;   /** Number of mappings in map */
+    ljson_mapitem_t items[]; /** Mappings */
+};
+
+/**
+ * Represents a JSON array */
+struct ljson_array_struct {
+    uint16_t     count;   /** Number of items in array */
+    ljson_item_t items[]; /** Array items */
+};
+
+/**
+ * Represents an entire JSON file */
 struct ljson_struct {
     ljson_item_t root;
 };
