@@ -63,10 +63,24 @@ struct ljson_struct {
     ljson_item_t root;
 };
 
+#define LJSON_PARSEFLAG_LENIENT (0UL << 1) /** Allow characters after parsable JSON string */
 
-ljson_t *ljson_parse(const char *);
+/**
+ * Parse JSON-formatted string, returning an object representation.
+ * 
+ * @param body String to parse
+ * @param flags Flags modifying the parsing, see LJSON_PARSEFLAG_*
+ * 
+ * @return NULL on error, else pointer to object repesenting JSON input
+ */
+ljson_t *ljson_parse(const char *body, uint32_t flags);
 
-void ljson_destroy(ljson_t *);
+/**
+ * De-allocate JSON object previously generated using ljson_parse.
+ * 
+ * @param json JSON object to destroy
+ */
+void ljson_destroy(ljson_t *json);
 
 #ifdef __cplusplus
 }

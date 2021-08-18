@@ -29,16 +29,20 @@ int main() {
     ljson_t *json;
 
     for(unsigned i = 0; i < N_TESTS; i++) {
-        json = ljson_parse(_tests[i]);
+        json = ljson_parse(_tests[i], 0);
         if(!json) {
-            fprintf(stderr, "json_parse[%u]: %s FAIL\n", i, _tests[i]);
+            fprintf(stderr, "\033[31mFAIL\033[0m on test %02u: %s\n", i, _tests[i]);
             fail++;
         } else {
-            pass--;
-            fprintf(stderr, "json_parse[%u]: %s PASS\n", i, _tests[i]);
+            pass++;
+            fprintf(stderr, "\033[32mPASS\033[0m on test %02u: %s\n", i, _tests[i]);
             ljson_destroy(json);
         }
     }
+
+    printf("----------\n"
+           "Pass: %d\n"
+           "Fail: %d\n", pass, fail);
 
     return (fail > 0) ? -1 : 0;
 }

@@ -12,10 +12,11 @@
 #  define DEBUG_PRINT(STR, ...)
 #endif
 
-static int _ljson_item_parse(const char *, const char **, ljson_item_t *);
-static void _ljson_item_delete(ljson_item_t *);
+static int         _ljson_item_parse(const char *, const char **, ljson_item_t *);
+static void        _ljson_item_delete(ljson_item_t *);
+static const char *_skipwht(const char *);
 
-ljson_t *ljson_parse(const char *body) {
+ljson_t *ljson_parse(const char *body, uint32_t flags) {
     ljson_t *json = (ljson_t *)malloc(sizeof(ljson_t));
 
     const char *end = body;
@@ -26,7 +27,14 @@ ljson_t *ljson_parse(const char *body) {
         return NULL;
     }
 
-    /* @todo Check if *end is only whitespace from the null terminator */
+    if(!(flags & LJSON_PARSEFLAG_LENIENT)) {
+        /* Check that we are at the end of the input */
+        end = _skipwht(end);
+        if(*end != '\0') {
+            ljson_destroy(json);
+            return NULL;
+        }
+    }
 
     return json;
 }
@@ -110,7 +118,7 @@ static int _count_items(const char *body) {
     /* @note This could be simplified by simply making arrays and maps dynamic
      * lists. Major concern is performance impact, both in speed an memory
      * utilization - this needs to be examined first */
-    const char *next = _skipwht(body);
+    const char *next = _skipwht(body+1);
     if((*body == '{' && *next == '}') ||
        (*body == '[' && *next == ']')) {
         /* No items */
@@ -150,6 +158,7 @@ static int _count_items(const char *body) {
 static int _ljson_item_parse_array(const char *body, const char **end, ljson_item_t *item) {
     item->type = LJSON_ITEMTYPE_ARRAY;
 
+    int fail = 0;
     int count = _count_items(body);
     if(count < 0) {
         return -1;
@@ -166,6 +175,7 @@ static int _ljson_item_parse_array(const char *body, const char **end, ljson_ite
     int i = 0;
     for(; i < count; i++) {
         if(_ljson_item_parse(body, end, &item->array->items[i])) {
+            fail = 1;
             break;
         } else {
             /* We increment this one at a time, so delete can still work */
@@ -182,10 +192,11 @@ static int _ljson_item_parse_array(const char *body, const char **end, ljson_ite
     
     body = _skipwht(body);
 
-    if((count == 0 && i != 0) ||
-       (i != (count-1))       ||
-       (*body != ']')) {
-        DEBUG_PRINT("array fail: (%d, %d), %c", i, count, *body);
+    if((count == 0 && i != 0)         ||
+       (count      && i != (count-1)) ||
+       (*body != ']')                 ||
+       fail) {
+        DEBUG_PRINT("array fail: (%d, %d), %c, %d", i, count, *body, fail);
         _ljson_item_delete(item);
         return -1;
     }
@@ -233,6 +244,7 @@ static int _ljson_parse_mapitem(const char *body, const char **end, ljson_mapite
 static int _ljson_item_parse_map(const char *body, const char **end, ljson_item_t *item) {
     item->type = LJSON_ITEMTYPE_MAP;
 
+    int fail = 0;
     int count = _count_items(body);
     if(count < 0) {
         return -1;
@@ -249,6 +261,7 @@ static int _ljson_item_parse_map(const char *body, const char **end, ljson_item_
     int i = 0;
     for(; i < count; i++) {
         if(_ljson_parse_mapitem(body, end, &item->map->items[i])) {
+            fail = 1;
             break;
         } else {
             /* We increment this one at a time, so delete can still work */
@@ -265,10 +278,11 @@ static int _ljson_item_parse_map(const char *body, const char **end, ljson_item_
     
     body = _skipwht(body);
 
-    if((count == 0 && i != 0) ||
-       (i != (count-1))       ||
-       (*body != '}')) {
-        DEBUG_PRINT("map fail: (%d, %d), %c", i, count, *body);
+    if((count == 0 && i != 0)         ||
+       (count      && i != (count-1)) ||
+       (*body != '}')                 ||
+       fail) {
+        DEBUG_PRINT("map fail: (%d, %d), %c, %d", i, count, *body, fail);
         _ljson_item_delete(item);
         return -1;
     }
