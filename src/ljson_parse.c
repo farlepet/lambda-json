@@ -105,7 +105,6 @@ static int _ljson_item_parse_number(const char *body, const char **end, ljson_it
 
     if(body[i] == '.') {
         item->type = LJSON_ITEMTYPE_FLOAT;
-        /* @todo Actually fix pointer type, rather than simply casting */
         item->flt  = (LJSON_FLOATTYPE)strtod(body, &_end);
         DEBUG_PRINT("float: %lf", item->flt);
     } else {
@@ -135,8 +134,6 @@ static int _count_items(const char *body) {
     body++;
 
     while(depth && *body) {
-        /* @todo This is a little lenient, you could easily end an array with a
-         * curly brace, and this wouldn't care. */
         if((*body == '[') ||
            (*body == '{')) {
             depth++;
