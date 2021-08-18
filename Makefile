@@ -54,6 +54,8 @@ run-tests: $(TESTS)
 	@build/tests/test0
 	@echo -e "\033[32m \033[1mTEST\033[21m   \033[34mtest1\033[0m"
 	@build/tests/test1
+	@echo -e "\033[32m \033[1mTEST\033[21m   \033[34mtest2\033[0m"
+	@build/tests/test2
 
 clean:
 	@rm -f $(OBJS) $(TESTS) $(OUT)
