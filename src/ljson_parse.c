@@ -100,16 +100,21 @@ static int _ljson_item_parse_number(const char *body, const char **end, ljson_it
     unsigned i = 0;
     if(body[i] == '-' || body[i] == '+') i++;
     while(isdigit(body[i])) i++;
+    /* To comply with strto* signature */
+    char *_end;
+
     if(body[i] == '.') {
         item->type = LJSON_ITEMTYPE_FLOAT;
         /* @todo Actually fix pointer type, rather than simply casting */
-        item->flt  = (LJSON_FLOATTYPE)strtod(body, (char **restrict)end);
+        item->flt  = (LJSON_FLOATTYPE)strtod(body, &_end);
         DEBUG_PRINT("float: %lf", item->flt);
     } else {
         item->type    = LJSON_ITEMTYPE_INTEGER;
-        item->integer = (LJSON_INTTYPE)strtol(body, (char **restrict)end, 10);
+        item->integer = (LJSON_INTTYPE)strtol(body, &_end, 10);
         DEBUG_PRINT("integer: %d", item->integer);
     }
+
+    *end = _end;
 
     return 0;
 }
@@ -166,7 +171,7 @@ static int _ljson_item_parse_array(const char *body, const char **end, ljson_ite
     DEBUG_PRINT("array item count: %d", count);
     body++;
 
-    item->array = (ljson_array_t *)malloc(sizeof(ljson_array_t) + (count * sizeof(ljson_item_t)));
+    item->array = (ljson_array_t *)malloc(sizeof(ljson_array_t) + ((size_t)count * sizeof(ljson_item_t)));
     if(!item->array) {
         return -1;
     }
@@ -179,7 +184,7 @@ static int _ljson_item_parse_array(const char *body, const char **end, ljson_ite
             break;
         } else {
             /* We increment this one at a time, so delete can still work */
-            item->array->count = i + 1;
+            item->array->count = (uint16_t)(i + 1);
             body = *end;
             body = _skipwht(body);
             if(*body != ',') {
@@ -220,7 +225,7 @@ static int _ljson_parse_mapitem(const char *body, const char **end, ljson_mapite
             return -1;
         }
         len++;
-    };
+    }
     mapitem->name = strndup(body, len);
     if(!mapitem->name) {
         return -1;
@@ -252,7 +257,7 @@ static int _ljson_item_parse_map(const char *body, const char **end, ljson_item_
     DEBUG_PRINT("map item count: %d", count);
     body++;
 
-    item->map = (ljson_map_t *)malloc(sizeof(ljson_map_t) + (count * sizeof(ljson_mapitem_t)));
+    item->map = (ljson_map_t *)malloc(sizeof(ljson_map_t) + ((size_t)count * sizeof(ljson_mapitem_t)));
     if(!item->map) {
         return -1;
     }
@@ -265,7 +270,7 @@ static int _ljson_item_parse_map(const char *body, const char **end, ljson_item_
             break;
         } else {
             /* We increment this one at a time, so delete can still work */
-            item->array->count = i + 1;
+            item->map->count = (uint16_t)(i + 1);
             body = *end;
             body = _skipwht(body);
             if(*body != ',') {

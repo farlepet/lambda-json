@@ -6,7 +6,7 @@
  *   Tests that ljson returns failure on improperly-formatted inputs. Use
  *   Valgrind to ensure data is properly free'd by ljson_destroy. */
 
-const char *_tests[] = {
+const static char *_tests[] = {
    ",",         /* Unexpected comma */
    "null,",     /* Unexpected comma, w/ initial content */
    "\"text'",   /* Mismatched quotes */
@@ -45,8 +45,6 @@ int main() {
     printf("----------\n"
            "Pass: %d\n"
            "Fail: %d\n", pass, fail);
-
-    return (fail > 0) ? -1 : 0;
 
     return (fail > 0) ? -1 : 0;
 }
