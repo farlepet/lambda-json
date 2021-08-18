@@ -7,7 +7,7 @@
  *   test for the validity of the resultant struct. Use Valgrind to ensure
  *   data is properly free'd by ljson_destroy. */
 
-const static char *_tests[] = {
+static const char *_tests[] = {
     "0",                 /* Integer */
     "-24",               /* Negative integer */
     "1.24",              /* Floating point */

@@ -26,13 +26,13 @@ endif
 
 OUT        = libljson.a
 
-.PHONY: all clean link
+.PHONY: all clean tests run-tests
 
-all: link
+all: $(OUT)
 
 tests: $(TESTS)
 
-link:   $(OBJS)
+$(OUT): $(OBJS)
 	@echo -e "\033[33m  \033[1mCombining Objects\033[0m"
 	@ar rvs --target=elf32-i386 $(OUT) $(OBJS) &> /dev/null
 
@@ -47,6 +47,13 @@ $(BUILDDIR)/%.o: %.c
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
+
+# TODO: Automatically run tests based on $(TESTS)
+run-tests: $(TESTS)
+	@echo -e "\033[32m \033[1mTEST\033[21m   \033[34mtest0\033[0m"
+	@build/tests/test0
+	@echo -e "\033[32m \033[1mTEST\033[21m   \033[34mtest1\033[0m"
+	@build/tests/test1
 
 clean:
 	@rm -f $(OBJS) $(TESTS) $(OUT)

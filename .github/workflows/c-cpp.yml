@@ -13,7 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: make
+    - name: Build library
       run: make
-    - name: make tests
+    - name: Build test cases
       run: make tests
+    - name: Run test cases
+      run: make run-tests
