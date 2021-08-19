@@ -95,6 +95,30 @@ ljson_t *ljson_parse(const char *body, uint32_t flags);
  */
 void ljson_destroy(ljson_t *json);
 
+/**
+ * Search for item corresponding to the given key within a map.
+ * 
+ * @param map Map to search through
+ * @param key Key to search for
+ * 
+ * @return NULL if not found, else pointer to corresponding item
+ */
+ljson_item_t *ljson_map_search(ljson_map_t *map, const char *key);
+
+/**
+ * Search for item corresponding to the given key within a map, and check if it's
+ * of the expected type. @see ljson_map_search
+ */
+static inline ljson_item_t *ljson_map_search_type(ljson_map_t *map, const char *key, ljson_itemtype_e type) {
+    ljson_item_t *_item = ljson_map_search(map, key);
+    if(_item && (_item->type == type)) {
+        return _item;
+    } else {
+        return NULL;
+    }
+}
+
+
 #ifdef __cplusplus
 }
 #endif

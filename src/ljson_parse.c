@@ -77,6 +77,21 @@ static void _ljson_item_delete(ljson_item_t *item) {
     }
 }
 
+ljson_item_t *ljson_map_search(ljson_map_t *map, const char *key) {
+    if(!map || !key) {
+        return NULL;
+    }
+
+    for(uint16_t i = 0; i < map->count; i++) {
+        if(!strcmp(map->items[i].name, key)) {
+            return &map->items[i].item;
+        }
+    }
+
+    return NULL;
+}
+
+
 /**
  * Checks if character is whitespace
  */
