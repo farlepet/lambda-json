@@ -15,6 +15,15 @@ static ljson_array_t _arr0 = {
          .integer = -24 }
     }
 };
+static ljson_array_t _arr1 = {
+    .count = 2,
+    .items = {
+      {  .type = LJSON_ITEMTYPE_STRING,
+         .str  = "str1" },
+      {  .type = LJSON_ITEMTYPE_STRING,
+         .str  = "str2,\"str3\"" }
+    }
+};
 
 static ljson_map_t _map0 = {
     .count = 2,
@@ -27,6 +36,18 @@ static ljson_map_t _map0 = {
          .item =
            { .type    = LJSON_ITEMTYPE_FLOAT,
              .flt     = -12.34 } } }
+};
+static ljson_map_t _map1 = {
+    .count = 2,
+    .items = {
+      {  .name = "a",
+         .item =
+           { .type = LJSON_ITEMTYPE_STRING,
+             .str  = "str1" } },
+      {  .name = "b",
+         .item =
+           { .type = LJSON_ITEMTYPE_STRING,
+             .str  = "str2,:\"str3\"" } } }
 };
 
 static const struct {
@@ -59,9 +80,15 @@ static const struct {
     { "[ 32, -24 ]",
       { .type    = LJSON_ITEMTYPE_ARRAY, 
         .array   = &_arr0 } },
+    { "[ \"str1\", \"str2,\\\"str3\\\"\" ]",
+      { .type    = LJSON_ITEMTYPE_ARRAY, 
+        .array   = &_arr1 } },
     { "{ 'a': 32, 'b': -12.34 }",
       { .type    = LJSON_ITEMTYPE_MAP, 
-        .map     = &_map0 } }
+        .map     = &_map0 } },
+    { "{ 'a': \"str1\", 'b': \"str2,:\\\"str3\\\"\" }",
+      { .type    = LJSON_ITEMTYPE_MAP, 
+        .map     = &_map1 } }
 };
 #define N_TESTS (sizeof(_tests) / sizeof(_tests[0]))
 
@@ -100,11 +127,6 @@ static int _check(const ljson_item_t *result, const ljson_item_t *expected) {
     
     switch(result->type) {
         case LJSON_ITEMTYPE_STRING:
-            if(strcmp(result->str, expected->str)) {
-                fprintf(stderr, "[%s](%lu) != [%s](%lu)\n",
-                    result->str, strlen(result->str),
-                    expected->str, strlen(expected->str));
-            }
             return !strcmp(result->str, expected->str);
         
         case LJSON_ITEMTYPE_INTEGER:

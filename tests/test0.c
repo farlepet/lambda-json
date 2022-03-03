@@ -19,10 +19,16 @@ static const char *_tests[] = {
     "\'\\\'str\\\'\'",
     "\'\\\'str\'",
     "\"\\\\str\"",       /* String with enclosed backslash */
+    "\"str,\"",          /* Quoted comma */
+    "\"str:\"",          /* Quoted colon */
     "null",              /* Null */
     "[0,1]",             /* Array */
     "{'0':2.4,'1':1}",   /* Map with ' */
     "{\"0\":0,\"1\":1}", /* Map with "" */
+
+    "{\"0\":0,\"1\":\"1,2\"}",  /* Map with quoted comma */
+    "{\"0\":0,\"1\":\"1:2\"}",  /* Map with quoted colon */
+    "[\"str1\",\"str2,str3\"]", /* Array with quoted comma */
 
     "[[[[0,1],[2,3]],[]]]", /* Deep array, with empty entry */
     "{'0':{'a':{'A':{'_':null}},'b':{},'c':24}}" /* Deep map, with empty entry */

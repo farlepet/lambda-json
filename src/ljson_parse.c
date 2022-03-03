@@ -146,19 +146,39 @@ static int _count_items(const char *body) {
     
     uint16_t count = 1;
     uint16_t depth = 1;
+    char     instr = '\0';
+    int      esc   = 0;
     body++;
 
     while(depth && *body) {
-        if((*body == '[') ||
-           (*body == '{')) {
-            depth++;
-        } else if((*body == ']') ||
-                  (*body == '}')) {
-            depth--;
-        } else if((depth == 1) &&
-                  (*body == ',')) {
-            /* Count only commas within the depth of the array. */
-            count++;
+        if(!instr) {
+            if((*body == '"') ||
+               (*body == '\'')) {
+                /* Start of string */
+                instr = *body;
+            } else if((*body == '[') ||
+                      (*body == '{')) {
+                depth++;
+            } else if((*body == ']') ||
+                      (*body == '}')) {
+                depth--;
+            } else if((depth == 1) &&
+                      (*body == ',')) {
+                /* Count only commas within the depth of the array. */
+                count++;
+            }
+        } else {
+            /* We are currently in a string */
+            if(esc) {
+                /* Ignore escaped character */
+                esc = 0;
+            } else if (*body == '\\') {
+                /* End of escaped character. TODO: support multi-character escape sequences */
+                esc = 1;
+            } else if(*body == instr) {
+                /* End of string */
+                instr = '\0';
+            }
         }
 
         body++;
