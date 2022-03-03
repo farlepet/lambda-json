@@ -14,6 +14,11 @@ static const char *_tests[] = {
     "-3.14",             /* Negative floating point */
     "\"str\"",           /* String with " */
     "\'str\'",           /* String with ' */
+    "\"\\\"str\\\"\"",   /* String with enclosed quotes */
+    "\"\\\"str\"",
+    "\'\\\'str\\\'\'",
+    "\'\\\'str\'",
+    "\"\\\\str\"",       /* String with enclosed backslash */
     "null",              /* Null */
     "[0,1]",             /* Array */
     "{'0':2.4,'1':1}",   /* Map with ' */

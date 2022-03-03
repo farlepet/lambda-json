@@ -7,5 +7,5 @@ However, the intent was to make it generally useful in any application
 requiring basic JSON parsing.
 
 Missing features (not currently planned):
- - Escape sequences (e.g. \" or \033)
+ - Special escape sequences (e.g. \n or \033)
  - JSON generation

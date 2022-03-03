@@ -15,9 +15,10 @@ DEPS      += $(patsubst %.c,$(BUILDDIR)/tests/%.d,$(TESTSRCS))
 
 CFLAGS    += -Wall -Wextra -Werror -I $(INC)
 ifeq ($(CC), clang)
-# TODO: Take the time to go through all these -Wno- commands to fix easy-to-fix errors
-CFLAGS    += -Weverything \
-             -Wno-padded
+CFLAGS    += -Weverything             \
+             -Wno-padded              \
+			 -Wno-reserved-identifier \
+			 -Wno-gnu-flexible-array-initializer
 endif
 
 ifeq ($(DEBUG), 1)

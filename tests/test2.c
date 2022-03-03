@@ -45,6 +45,15 @@ static const struct {
     { "'test'",
       { .type    = LJSON_ITEMTYPE_STRING,
         .str     = "test" } },
+    { "\"\\\"test\"",
+      { .type    = LJSON_ITEMTYPE_STRING,
+        .str     = "\"test" } },
+    { "'\\'test'",
+      { .type    = LJSON_ITEMTYPE_STRING,
+        .str     = "'test" } },
+    { "'\\\\test'",
+      { .type    = LJSON_ITEMTYPE_STRING,
+        .str     = "\\test" } },
     { "null",
       { .type    = LJSON_ITEMTYPE_NULL } },
     { "[ 32, -24 ]",
@@ -91,6 +100,11 @@ static int _check(const ljson_item_t *result, const ljson_item_t *expected) {
     
     switch(result->type) {
         case LJSON_ITEMTYPE_STRING:
+            if(strcmp(result->str, expected->str)) {
+                fprintf(stderr, "[%s](%lu) != [%s](%lu)\n",
+                    result->str, strlen(result->str),
+                    expected->str, strlen(expected->str));
+            }
             return !strcmp(result->str, expected->str);
         
         case LJSON_ITEMTYPE_INTEGER:

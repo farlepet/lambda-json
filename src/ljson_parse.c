@@ -314,20 +314,39 @@ static int _ljson_item_parse_string(const char *body, const char **end, ljson_it
     char endchr = *body;
     body++;
 
-    size_t sz = 0;
+    size_t sz = 0, esc = 0;
     while(body[sz] != endchr) {
         if(body[sz] == '\0') {
             /* Did not find the end of string */
             return -1;
         }
+        if((body[sz]   == '\\') &&
+           ((sz == 0) || (body[sz-1] != '\\'))) {
+            /* Allow escaped character */
+            esc++;
+            sz++;
+        }
         sz++;
     }
 
-    item->str = strndup(body, sz);
+    item->str = (char *)malloc((sz - esc) + 1);
     if(!item->str) {
         return -1;
     }
-    
+
+    size_t idx = 0;
+    for(size_t i = 0; i < sz; i++) {
+        if(body[i] == '\\') {
+            /* For now, we just accept whatever comes after the \ as it is
+             * written. We do not currently handle special situations such as \n */
+            if((i == 0) || (body[i-1] != '\\')) {
+                continue;
+            }
+        }
+        item->str[idx++] = body[i];
+    }
+    item->str[idx] = '\0';
+
     *end = &body[sz + 1];
     return 0;
 }
