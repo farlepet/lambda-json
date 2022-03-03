@@ -76,7 +76,7 @@ struct ljson_struct {
     ljson_item_t root;
 };
 
-#define LJSON_PARSEFLAG_LENIENT (0UL << 1) /** Allow characters after parsable JSON string */
+#define LJSON_PARSEFLAG_LENIENT (1UL << 0) /** Allow characters after parsable JSON string */
 
 /**
  * Parse JSON-formatted string, returning an object representation.
