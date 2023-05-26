@@ -29,6 +29,9 @@ int main() {
     int pass = 0, fail = 0;
     ljson_t *json;
 
+    printf("Test 2: Test functionality of LJSON_PARSEFLAG_LENIENT\n"
+           "----------\n");
+
     for(unsigned i = 0; i < N_TESTS; i++) {
         json = ljson_parse(_tests[i].json, _tests[i].flags);
         if((_tests[i].result  && !json) ||
