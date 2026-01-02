@@ -14,15 +14,16 @@ TESTS      = $(patsubst %.c,$(BUILDDIR)/%,$(TESTSRCS))
 DEPS      += $(patsubst %.c,$(BUILDDIR)/tests/%.d,$(TESTSRCS))
 
 CFLAGS    += -Wall -Wextra -Werror -I $(INC)
-ifeq ($(CC), clang)
-CFLAGS    += -Weverything             \
-             -Wno-padded              \
-			 -Wno-reserved-identifier \
-			 -Wno-gnu-flexible-array-initializer
-endif
 
 ifeq ($(DEBUG), 1)
 CFLAGS    += -DLJSON_DEBUG
+endif
+
+VERBOSE = 0
+ifeq ($(VERBOSE), 1)
+Q =
+else
+Q = @
 endif
 
 OUT        = libljson.a
@@ -35,18 +36,18 @@ tests: $(TESTS)
 
 $(OUT): $(OBJS)
 	@echo -e "\033[33m  \033[1mCombining Objects\033[0m"
-	@ar rvs --target=elf32-i386 $(OUT) $(OBJS) &> /dev/null
+	$(Q) $(AR) rsc $(OUT) $(OBJS) &> /dev/null
 
 $(BUILDDIR)/%: %.c $(OUT)
 	@echo -e "\033[32m  \033[1mCC\033[21m    \033[34m$<\033[0m"
-	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -o $@ $< $(OUT)
+	$(Q) mkdir -p $(dir $@)
+	$(Q) $(CC) $(CFLAGS) -o $@ $< $(OUT)
 
 # gcc:
 $(BUILDDIR)/%.o: %.c
 	@echo -e "\033[32m  \033[1mCC\033[21m    \033[34m$<\033[0m"
-	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -c -o $@ $<
+	$(Q) mkdir -p $(dir $@)
+	$(Q) $(CC) $(CFLAGS) -c -o $@ $<
 
 
 # TODO: Automatically run tests based on $(TESTS)
@@ -61,6 +62,6 @@ run-tests: $(TESTS)
 	@build/tests/test3
 
 clean:
-	@rm -f $(OBJS) $(TESTS) $(OUT)
+	$(Q) rm -f $(OBJS) $(TESTS) $(OUT)
 
 -include $(DEPS)
